@@ -146,16 +146,16 @@ covtest(results)
 lossfunc(results)
 #> Please note that the following results are multiplied with 10000.
 #> 
-#> $`Regulatory loss function`
+#> $lossfunc1
 #> [1] 7.411243
 #> 
-#> $`Firm's loss function (Sarma et al., 2003)`
+#> $lossfunc2
 #> [1] 14.1705
 #> 
-#> $`Loss function following Abad et al. (2015)`
+#> $lossfunc3
 #> [1] 14.39198
 #> 
-#> $`Compromise of regulatory and firm's loss function`
+#> $lossfunc4
 #> [1] 13.44642
 ```
 

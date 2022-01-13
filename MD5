@@ -1,5 +1,6 @@
-701021edf36c23a248a4c0caf7c67159 *DESCRIPTION
+78a3e71fbcd447a8ae296be2196ee088 *DESCRIPTION
 898e9e8721b578f8abe900787b91a27b *NAMESPACE
+28e90ed7f3917cb3f17e2ef0f094df57 *NEWS.md
 90eaac5ed8c7e91bd70813c75333b73f *R/ESTX.R
 73ca0703ffc2e9f87b71fb17e00a935f *R/WMT.R
 12fcc2dbc503c939b056a4dd27772b49 *R/Welcome.R
@@ -11,8 +12,8 @@ bb7ceb6c9184bb19d0a6f771c58ddede *R/plot.ufRisk.R
 34d5f36da0f0397edd7cbafeb4b210a6 *R/sysdata.rda
 ad7e174928fc393d37b3c26c5e522cc6 *R/trafftest.R
 9aa4de0eec84f5eee8bf1f87d3ce7e2c *R/ufRisk.R
-74b4c91a7b0ba37287c0d56caef5a92b *R/varcast.R
-25a9d0b67c28fae1ad4c7aeb364f9e42 *README.md
+68b5f32705edaed068499fe68c607de8 *R/varcast.R
+d751fc6256e497ff49f9349f9354c525 *README.md
 a0e8218242b402c5362cf4876db80bfa *data/ESTX.rda
 1bf260ab455d95ae47121328ffa28922 *data/WMT.rda
 f1cffe15b8dd56a0b337b9b8064f48ea *man/ESTX.Rd
@@ -20,9 +21,9 @@ f1cffe15b8dd56a0b337b9b8064f48ea *man/ESTX.Rd
 5b3a665ae4b2533fbdf0fa38a22dfdbb *man/covtest.Rd
 59ec991d7a23cefe8cda67b827ed6a15 *man/figures/README-unnamed-chunk-2-1.png
 59ec991d7a23cefe8cda67b827ed6a15 *man/figures/README-unnamed-chunk-3-1.png
-09521291da341aefb5432652461b26f5 *man/figures/README-unnamed-chunk-4-1.png
-888b24dda75386f11c7636bbc5c06220 *man/figures/README-unnamed-chunk-5-1.png
-b1e65c30600efa21711b1590694b6ed8 *man/figures/README-unnamed-chunk-6-1.png
+afd716b3b88e0fce93a08420d47a7226 *man/figures/README-unnamed-chunk-4-1.png
+629af503b4e6937d04745d0b90bfdeaa *man/figures/README-unnamed-chunk-5-1.png
+7f1d3e970b3dfff0796dd33588902884 *man/figures/README-unnamed-chunk-6-1.png
 c7355c59b610d489ed52c9ebeda9fe2e *man/lossfunc.Rd
 c49d7c4f2c66fdac38c6649b997f76de *man/plot.ufRisk.Rd
 117a527428c0c84b2a40583a60037194 *man/print.ufRisk.Rd

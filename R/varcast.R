@@ -329,7 +329,7 @@ varcast <- function(x, a.v = 0.99, a.e = 0.975,
                                                        args = dots))
                     res.in <- np.est[["res"]]
                     res.out <- log(ret.out^2) - np.est[["ye"]][n.in]
-                    Csig <- sd(exp(0.5 * res.in))
+                    Csig <- sd(ret.in / exp(0.5 * np.est[["ye"]]))
                     sxt <- exp(0.5 * np.est[["ye"]]) * Csig
                     sfc <- sxt[n.in]
                     zeta.in <- ret.in / sxt
@@ -391,10 +391,10 @@ varcast <- function(x, a.v = 0.99, a.e = 0.975,
                   sig.fc <- exp(0.5 * (y.fc.out + mule - mulz))
                   sig.fc.in <- exp(0.5 * (y.cent[1:n.in] - model_fit[["residuals"]]
                                          + mule - mulz))
-                  ret.sd <- zeta.in / sig.fc.in
-                  df <- as.numeric(rugarch::fitdist("std", ret.sd)$pars[[3]])
                   sig.fc <- sig.fc * sfc
                   sig.in <- sig.fc.in * sxt
+                  ret.sd <- zeta.in / sig.in
+                  df <- as.numeric(rugarch::fitdist("std", ret.sd)$pars[[3]])
                   },
          filGARCH = {
            if (p.true < q.true) {
@@ -407,7 +407,7 @@ varcast <- function(x, a.v = 0.99, a.e = 0.975,
            ar <- model_fit[["ar"]]
            ma <- model_fit[["ma"]]
            d <- model_fit[["d"]]
-           k <- n.in
+           k <- 50
            coef.all <- arfilt(ar, ma, d, k)
 
            pre0 <- c()
@@ -428,7 +428,7 @@ varcast <- function(x, a.v = 0.99, a.e = 0.975,
            sig.fc <- exp(0.5 * (y.fc.out + mean(res.in)))
            y.fc.in <- model_fit[["fitted"]]
            sig.fc.in <- exp(0.5 * y.fc.in)
-           ret.sd <- zeta.in / (exp(y.fc.in / 2) * sxt)
+           ret.sd <- zeta.in / (sig.fc.in * sxt)
            df <- as.numeric(rugarch::fitdist("std", ret.sd)$pars[3])
            if (smooth == "lpr") {
              sd.c <- 1
