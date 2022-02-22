@@ -54,7 +54,7 @@ plot.ufRisk <- function(x, plot.option = NULL, ...) {
     plot_choice <- as.numeric(plot_choice)
   }
   else {
-    plot_choice = plot.option
+    plot_choice <- plot.option
   }
   if(attr(x, "function") == "varcast") {
 
