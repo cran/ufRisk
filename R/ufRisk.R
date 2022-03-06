@@ -62,7 +62,7 @@
 #'\item Yuanhua Feng (Department of Economics, Paderborn University), \cr
 #'Author of the Algorithms \cr
 #'Website: \url{https://wiwi.uni-paderborn.de/en/dep4/feng/}
-#'\item Xuehai Zhang (Ernst & Young, Frankfurt am Main),\cr
+#'\item Xuehai Zhang (Former research associate at Paderborn University),\cr
 #'Author \cr
 #'\item Shujie Li (Scientific Employee) (Department of Economics,
 #'Paderborn University), \cr

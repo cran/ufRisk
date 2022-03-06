@@ -458,7 +458,7 @@ varcast <- function(x, a.v = 0.99, a.e = 0.975,
            gamma <- 0
            if (p.true > 0) {
              alpha <- pars.general[2:(1 + p.true)]
-             gamma <- pars.general[(p + q + 2):(2 * p + q + 1) ]
+             gamma <- pars.general[(p.true + q.true + 2):(2 * p.true + q.true + 1)]
            }
 
            if (q.true > 0) {

@@ -154,21 +154,21 @@ covtest <- function(obj = list(Loss = NULL, VaR = NULL, p = NULL)) {
          must be passed to", " 'obj'.")
     }
 
-    if (class(obj) != "ufRisk" && (length(obj[["Loss"]]) <= 1 ||
+    if (!inherits(obj, "ufRisk") && (length(obj[["Loss"]]) <= 1 ||
                                    !all(!is.na(obj[["Loss"]])) ||
                                    !is.numeric(obj[["Loss"]]))) {
         stop("A numeric vector of length > 1 and without NAs must be passed to",
              " 'obj[['Loss']]'.")
     }
 
-    if (class(obj) != "ufRisk" && (length(obj[["VaR"]]) <= 1 ||
+    if (!inherits(obj, "ufRisk") && (length(obj[["VaR"]]) <= 1 ||
                                    !all(!is.na(obj[["VaR"]])) ||
                                    !is.numeric(obj[["VaR"]]))) {
         stop("A numeric vector of length > 1 and without NAs must be passed to",
              " 'obj[['VaR']]'.")
     }
 
-    if (class(obj) != "ufRisk" && (length(obj[["p"]]) != 1 ||
+    if (!inherits(obj, "ufRisk") && (length(obj[["p"]]) != 1 ||
                                    is.na(obj[["p"]]) ||
                                    !is.numeric(obj[["p"]]) ||
                                    obj[["p"]] <= 0 || obj[["p"]] >= 1)) {
@@ -176,7 +176,7 @@ covtest <- function(obj = list(Loss = NULL, VaR = NULL, p = NULL)) {
              " 'obj[['p']]'")
     }
 
-    if(class(obj) == "ufRisk") {
+    if(inherits(obj, "ufRisk")) {
         Loss <- -obj[["ret.out"]]
         VaR <- obj[["VaR.v"]]
         p <- 1 - obj[["a.v"]]

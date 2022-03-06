@@ -112,14 +112,14 @@ lossfunc <- function(obj = list(Loss = NULL, ES = NULL), beta = 1e-04) {
          length and without NAs must be passed to", " 'obj'.")
     }
 
-    if (class(obj) != "ufRisk" && (length(obj[["Loss"]]) <= 1 ||
+    if (!inherits(obj, "ufRisk") && (length(obj[["Loss"]]) <= 1 ||
                                    any(is.na(obj[["Loss"]])) ||
                                    !is.numeric(obj[["Loss"]]))) {
         stop("A numeric vector of length > 1 and without NAs must be passed to",
              " 'obj$Loss'.")
     }
 
-    if (class(obj) != "ufRisk" && (length(obj[["ES"]]) <= 1 ||
+    if (!inherits(obj, "ufRisk") && (length(obj[["ES"]]) <= 1 ||
                                    any(is.na(obj[["ES"]])) ||
                                    !is.numeric(obj[["ES"]]))) {
         stop("A numeric vector of length > 1 and without NAs must be passed to",
@@ -130,7 +130,7 @@ lossfunc <- function(obj = list(Loss = NULL, ES = NULL), beta = 1e-04) {
         stop("A single numeric value must be passed to"," 'beta'")
     }
 
-    if(class(obj) == "ufRisk") {
+    if(inherits(obj, "ufRisk")) {
         Loss <- -obj[["ret.out"]]
     }
     else {
