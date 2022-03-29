@@ -131,25 +131,28 @@
 
 
 trafftest <- function(obj) {
+
     ret.out <- obj$ret.out
     loss <- -ret.out
     sig.fc <- obj$sig.fc
     VaR.e <- obj$VaR.e
     VaR.v <- obj$VaR.v
     ES <- obj$ES
-    df <- obj$df
+    dfree <- obj$dfree
+    if (is.na(dfree)) sdev <- 1
+    if (!is.na(dfree)) sdev <- sqrt(dfree / (dfree - 2))
     a.v <- obj$a.v
     a.e <- obj$a.e
-    sd.c <- obj$sd.c
     model <- obj$model
     n.out <- length(ret.out)
     mean.ret <- obj$mean
     if (is.null(mean.ret)) mean.ret <- 0
 
     br_ind <- which(VaR.e < loss)
-    loss_br <- -(ret.out - mean.ret)/sig.fc
-    loss_br <- loss_br[br_ind] * sqrt(df/(df - 2))
-    br <- 1 - (1 - pt(loss_br, df))/a.e
+    loss_br <- -(ret.out - mean.ret) / sig.fc
+    loss_br <- loss_br[br_ind] * sdev
+    if (is.na(dfree)) br <- 1 - (1 - pnorm(loss_br))/a.e
+    if (!is.na(dfree)) br <- 1 - (1 - pt(loss_br, dfree))/a.e
     br.sum <- sum(br)
     pot_VaR.e <- length(VaR.e[VaR.e < loss])
     pot_VaR.v <- length(VaR.v[VaR.v < loss])

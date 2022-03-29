@@ -1,3 +1,10 @@
+# ufRisk 1.0.4
+
+* added the option to choose between normal- and t-distribution (via the 
+  argument 'distr' in 'varcast()')
+  
+* fixed some minor bugs in function 'varcast()'
+
 # ufRisk 1.0.3
 
 * fixed a minor bug that caused an error if model = 'eGARCH' and 

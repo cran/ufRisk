@@ -11,8 +11,9 @@ varcast(
   a.e = 0.975,
   model = c("sGARCH", "lGARCH", "eGARCH", "apARCH", "fiGARCH", "filGARCH"),
   garchOrder = c(1, 1),
+  distr = c("norm", "std"),
   n.out = 250,
-  smooth = "none",
+  smooth = c("none", "lpr"),
   ...
 )
 }
@@ -28,6 +29,9 @@ varcast(
 
 \item{garchOrder}{orders to be estimated; c(1, 1), i.e. p = q = 1, is the
 default.}
+
+\item{distr}{distribution to use for the innovations of the respective GARCH model;
+is set to \code{'std'} by default}
 
 \item{n.out}{size of out-sample; is set to \code{250} by default.}
 
@@ -63,7 +67,7 @@ in-sample}
 \item{VaR.e}{out-sample forecasts of the (1-\code{a.e})100\% VaR}
 \item{VaR.v}{out-sample forecasts of the (1-\code{a.v})100\% VaR}
 \item{ES}{out-sample forecasts of the (1-\code{a.e})100\% ES}
-\item{df}{estimated degrees of freedom for the standardized returns}
+\item{dfree}{estimated degrees of freedom for the standardized returns}
 \item{a.v}{coverage level for the 99 \% VaR}
 \item{a.e}{coverage level for 97.5 \% VaR}
 \item{garchOrder}{the orders p and q of the implemented GARCH-type model}

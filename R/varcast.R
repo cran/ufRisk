@@ -17,6 +17,8 @@
 #' 'lGARCH', 'fiGARCH' and 'filGARCH'; is set to \code{'sGARCH'} by default.
 #' @param garchOrder orders to be estimated; c(1, 1), i.e. p = q = 1, is the
 #' default.
+#' @param distr distribution to use for the innovations of the respective GARCH model;
+#' is set to \code{'std'} by default
 #' @param n.out size of out-sample; is set to \code{250} by default.
 #' @param smooth a character object; defines the data-driven smoothing approach
 #' for the estimation of the nonparametric scale function; for
@@ -142,7 +144,7 @@
 #' \item{VaR.e}{out-sample forecasts of the (1-\code{a.e})100\% VaR}
 #' \item{VaR.v}{out-sample forecasts of the (1-\code{a.v})100\% VaR}
 #' \item{ES}{out-sample forecasts of the (1-\code{a.e})100\% ES}
-#' \item{df}{estimated degrees of freedom for the standardized returns}
+#' \item{dfree}{estimated degrees of freedom for the standardized returns}
 #' \item{a.v}{coverage level for the 99 \% VaR}
 #' \item{a.e}{coverage level for 97.5 \% VaR}
 #' \item{garchOrder}{the orders p and q of the implemented GARCH-type model}
@@ -224,9 +226,12 @@
 #'
 
 varcast <- function(x, a.v = 0.99, a.e = 0.975,
-                     model = c("sGARCH", "lGARCH", "eGARCH", "apARCH", "fiGARCH",
-                               "filGARCH"),
-                     garchOrder = c(1, 1), n.out = 250, smooth = "none", ...) {
+                    model = c("sGARCH", "lGARCH", "eGARCH", "apARCH", "fiGARCH",
+                              "filGARCH"),
+                    garchOrder = c(1, 1),
+                    distr = c("norm", "std"),
+                    n.out = 250,
+                    smooth = c("none", "lpr"), ...) {
 
   if (length(x) <= 1 || !all(!is.na(x)) || !is.numeric(x)) {
     stop("A numeric vector of length > 1 and without NAs must be passed to",
@@ -256,16 +261,29 @@ varcast <- function(x, a.v = 0.99, a.e = 0.975,
     stop("A single positive integer must be passed to 'n.out'.")
   }
   n.out <- floor(n.out)
+
+  if (!(length(distr) %in% c(1, 2)) || !all(!is.na(distr)) ||
+      !is.character(distr)) {
+    stop("Input argument 'distr' must be a single character ",
+         "value. Valid choices are 'norm' and 'std'.")
+  }
+
+  if (all(distr == c("norm", "std"))) distr <- "std"
+  if (length(distr) != 1 || !(distr) %in% c("norm", "std")) {
+    stop("Input argument 'distr' must be a single character ",
+         "value. Valid choices are 'norm' and 'std'.")
+  }
+
   if (!(length(smooth) %in% c(1, 2)) || !all(!is.na(smooth)) ||
-    !is.character(smooth)) {
-    stop("The input to the argument 'smooth' must be a single character ",
-      "value.")
+      !is.character(smooth)) {
+    stop("Input argument 'smooth' must be a single character ",
+         "value. Valid choices are 'none' and 'lpr'.")
   }
 
   if (all(smooth == c("none", "lpr"))) smooth <- "none"
   if (length(smooth) != 1 || !(smooth) %in% c("none", "lpr")) {
-    stop("The input to the argument 'smooth' must be a single character ",
-      "value.")
+    stop("Input argument 'smooth' must be a single character ",
+         "value. Valid choices are 'none' and 'lpr'.")
   }
 
   if (smooth == "lpr" && model %in% c("sGARCH", "lGARCH", "eGARCH", "apARCH")) {
@@ -335,25 +353,30 @@ varcast <- function(x, a.v = 0.99, a.e = 0.975,
                     zeta.in <- ret.in / sxt
                     zeta.out <- ret.out / sfc
                   })
-            }
-         )
+         }
+  )
 
   zeta.n <- tail(zeta.in, n = l)
   zeta.fc <- c(zeta.n, zeta.out[1:n.out])
 
   if (model %in% c("sGARCH", "eGARCH", "apARCH", "fiGARCH")) {
     spec <- rugarch::ugarchspec(variance.model =
-                                 list(model = model,
-                                      garchOrder = c(p.true, q.true)),
-                                      mean.model = list(armaOrder = c(0, 0),
-                                                        include.mean = FALSE),
-                                      distribution.model = "std")
-    model_fit <- rugarch::ugarchfit(spec = spec, data = zeta.in)
+                                  list(model = model,
+                                       garchOrder = c(p.true, q.true)),
+                                mean.model = list(armaOrder = c(0, 0),
+                                                  include.mean = FALSE),
+                                distribution.model = distr)
+    model_fit <- rugarch::ugarchfit(spec = spec, data = c(zeta.in, zeta.out),
+                                    out.sample = n.out,
+                                    fit.control = list(trunclag = min(n.in, 1000)))
+
+    if (distr == "std") dfree <- model_fit@fit$coef[["shape"]]
+    if (distr == "norm") dfree <- NA
+
     c.sig <- as.numeric(rugarch::sigma(model_fit))
-    sig.n <- tail(c.sig, n = l)
-    alpha <- 0
-    beta <- 0
     sig.in <- c.sig * sxt
+    sig.fc <- rugarch::ugarchforecast(model_fit, n.ahead = 1, n.roll = n.out - 1)
+    sig.fc <- as.numeric(rugarch::sigma(sig.fc)) * sfc
   }
 
 
@@ -363,47 +386,52 @@ varcast <- function(x, a.v = 0.99, a.e = 0.975,
              stop("p >= q must be satisfied for the estimation of a Log-GARCH
                   model ", "via its ARMA representation.")
            }
-                  model_fit <- arima(res.in,
-                                    order = c(p.true, 0, q.true),
-                                    include.mean = FALSE)
-                  y.cent <- c(res.in, res.out) - mule * isTRUE(smooth == "none")
-                  mulz <- -log(mean(exp(model_fit[["residuals"]])))
-                  ar <- model_fit$model$phi
-                  ma <- -model_fit$model$theta
-                  k <- 50
-                  d <- 0
-                  coef.all <- arfilt(ar, ma, d, k)
+           model_fit <- arima(res.in,
+                              order = c(p.true, 0, q.true),
+                              include.mean = FALSE)
+           y.cent <- c(res.in, res.out) - mule * isTRUE(smooth == "none")
+           mulz <- -log(mean(exp(model_fit[["residuals"]])))
+           ar <- model_fit$model$phi
+           ma <- -model_fit$model$theta
+           k <- 50
+           d <- 0
+           coef.all <- arfilt(ar, ma, d, k)
 
-                  pre0 <- c()
-                  add0 <- 0
-                  if (n.in < k) {
-                    add0 <- k - n.in
-                    pre0 <- rep(0, add0)
-                  }
-                  y.fc.out <- (1:n.out) * 0
-                  y.cent <- c(pre0, y.cent)
+           pre0 <- c()
+           add0 <- 0
+           if (n.in < k) {
+             add0 <- k - n.in
+             pre0 <- rep(0, add0)
+           }
+           y.fc.out <- (1:n.out) * 0
+           y.cent <- c(pre0, y.cent)
 
-                  for (i in (add0 + n.in + 1):(add0 + n.ret)) {
-                    y.fc.out[i - (add0 + n.in)] <- coef.all %*%
-                      y.cent[(i - 1):(i - k)]
-                  }
+           for (i in (add0 + n.in + 1):(add0 + n.ret)) {
+             y.fc.out[i - (add0 + n.in)] <- coef.all %*%
+               y.cent[(i - 1):(i - k)]
+           }
 
-                  sig.fc <- exp(0.5 * (y.fc.out + mule - mulz))
-                  sig.fc.in <- exp(0.5 * (y.cent[1:n.in] - model_fit[["residuals"]]
-                                         + mule - mulz))
-                  sig.fc <- sig.fc * sfc
-                  sig.in <- sig.fc.in * sxt
-                  ret.sd <- zeta.in / sig.in
-                  df <- as.numeric(rugarch::fitdist("std", ret.sd)$pars[[3]])
-                  },
+           sig.fc <- exp(0.5 * (y.fc.out + mule - mulz))
+           sig.fc.in <- exp(0.5 * (y.cent[1:n.in] - model_fit[["residuals"]]
+                                   + mule - mulz))
+           sig.fc <- sig.fc * sfc
+           sig.in <- sig.fc.in * sxt
+           ret.sd <- zeta.in / sig.in
+           if (distr == "std") {
+             dfree <- as.numeric(rugarch::fitdist("std", ret.sd)$pars[[3]])
+           }
+           if (distr == "norm") {
+             dfree <- NA
+           }
+         },
          filGARCH = {
            if (p.true < q.true) {
              stop("p >= q must be satisfied for the estimation of a Log-GARCH
                   model ", "via its ARMA representation.")
            }
            model_fit <-  suppressWarnings(fracdiff::fracdiff(res.in,
-                                                            nar = p.true,
-                                                            nma = q.true))
+                                                             nar = p.true,
+                                                             nma = q.true))
            ar <- model_fit[["ar"]]
            ma <- model_fit[["ma"]]
            d <- model_fit[["d"]]
@@ -424,128 +452,60 @@ varcast <- function(x, a.v = 0.99, a.e = 0.975,
            for (i in (add0 + n.in + 1):(add0 + n.ret)) {
              y.fc.out[i - (add0 + n.in)] <- coef.all %*% y.cent[(i - 1):(i - k)]
            }
-
            sig.fc <- exp(0.5 * (y.fc.out + mean(res.in)))
            y.fc.in <- model_fit[["fitted"]]
            sig.fc.in <- exp(0.5 * y.fc.in)
            ret.sd <- zeta.in / (sig.fc.in * sxt)
-           df <- as.numeric(rugarch::fitdist("std", ret.sd)$pars[3])
+           if (distr == "std") {
+             dfree <- as.numeric(rugarch::fitdist("std", ret.sd)$pars[3])
+           }
+           if (distr == "norm") {
+             dfree <- NA
+           }
            if (smooth == "lpr") {
-             sd.c <- 1
-             }
-           else {
-             sd.c <- sd(ret.sd)
+             Ch <- sd(zeta.in / sig.fc.in)
            }
-           sig.fc <- sig.fc * sfc * sd.c
-           sig.in <- sig.fc.in * sxt * sd.c
+           if (smooth == "none") {
+             Ch <- sd(ret.sd)
+           }
+           sig.fc <- sig.fc * sfc * Ch
+           sig.in <- sig.fc.in * sxt * Ch
+         }
+  )
+
+  switch(distr,
+         norm = {
+           sdev <- 1
+           ES0t <- 1
+           arglst <- list(p = c(a.e, a.v), distr = distr)
          },
-         sGARCH = {
-           pars.general <- unname(rugarch::coef(model_fit))
-           omega <- pars.general[[1]]
-           if (p.true > 0) alpha = pars.general[2:(1 + p.true)]
-           if (q.true > 0) beta = pars.general[(p.true + 2):(1 + p.true + q.true)]
-           df <- pars.general[[p.true + q.true + 2]]
-           vol.fc <- c(sig.n^2, rep(NA, times = n.out))
-           for (i in (1 + l):(n.out + l)) {
-             vol.fc[i] <- omega + alpha %*% zeta.fc[(i - 1):(i - p)]^2 +
-               beta %*% vol.fc[(i - 1):(i - q)]
-           }
-           sig.fc <- sqrt(vol.fc[(1 + l):(n.out + l)]) * sfc
-         },
-         eGARCH = {
-           pars.general <- unname(rugarch::coef(model_fit))
-           omega <- pars.general[[1]]
-           gamma <- 0
-           if (p.true > 0) {
-             alpha <- pars.general[2:(1 + p.true)]
-             gamma <- pars.general[(p.true + q.true + 2):(2 * p.true + q.true + 1)]
-           }
+         std = {
+           sdev <- sqrt(dfree / (dfree - 2))
+           ES0t <- (dfree + quant(a.e, df = dfree, distr = distr)^2) / (dfree - 1)
+           arglst <- list(p = c(a.e, a.v), df = dfree, distr = distr)
+         }
+  )
 
-           if (q.true > 0) {
-             beta <- pars.general[(p.true + 2):(1 + p.true + q.true)]
-           }
-           df <- pars.general[[2 * p.true + q.true + 2]]
-           eps.in <- zeta.in / c.sig
-           mae <- mean(abs(eps.in))
-           eps <- c(tail(eps.in, n = l), rep(NA, n.out ))
-           lnsig2 <- c(log(tail(c.sig, n = l)^2), rep(NA, n.out))
-           sig.fc <- rep(NA, n.out)
+  quants <- do.call(what = quant, args = arglst)
+  q.e <- quants[1]
+  q.a <- quants[2]
+  VaR.fc <- -mean.ret.in + sig.fc * q.a / sdev
+  VaR.e.fc <- -mean.ret.in + sig.fc * q.e / sdev
 
-           for (i in (1 + l):(n.out + l)) {
-             lnsig2[i] <- omega + alpha %*% eps[(i - 1):(i - p)] +
-               gamma %*% (abs(eps[(i - 1):(i - p)]) - mae) +
-               beta %*% lnsig2[(i - 1):(i - q)]
-             sig.fc[i - l] <- exp(0.5 * lnsig2[i])
-             eps[i] <- zeta.fc[i] / sig.fc[i - l]
-           }
-
-           sig.fc <- sig.fc * sfc
-
-         },
-        apARCH = {
-          pars.general <- unname(rugarch::coef(model_fit))
-          omega <- pars.general[[1]]
-          gamma <- 0
-          if (p.true > 0) {
-            alpha <- pars.general[2:(1 + p.true)]
-            gamma <- pars.general[(p + q + 2):(2 * p + q + 1) ]
-          }
-          if (q.true > 0) {
-            beta <- pars.general[(p.true + 2):(1 + p.true + q.true)]
-          }
-          d1 <- pars.general[[2 * p.true + q.true + 2]]
-          df <- pars.general[[2 * p.true + q.true + 3]]
-          sig.d <- c(tail(c.sig, n = l)^d1, rep(NA, times = n.out))
-
-          for (i in (1 + l):(n.out + l)) {
-            sig.d[i] <- omega + alpha %*% (abs(zeta.fc[(i - 1):(i - p)]) -
-                                            gamma * zeta.fc[(i - 1):(i - p)])^d1 +
-              beta %*% sig.d[(i - 1):(i - q)]
-          }
-          sig.fc <- sig.d[(1 + l):(n.out + l)]^(1 / d1) * sfc
-        },
-        fiGARCH = {
-          pars.general <- unname(rugarch::coef(model_fit))
-          omega <- pars.general[[1]]
-          if (p.true > 0) {
-            alpha <- pars.general[2:(1 + p.true)]
-          }
-          if (q.true > 0) {
-            beta <- pars.general[(p.true + 2):(1 + p.true + q.true)]
-          }
-          d <- pars.general[[p.true + q.true + 2]]
-          df <- pars.general[[p.true + q.true + 3]]
-          zeta.all <- c(zeta.in, zeta.out)
-
-          k <- n.in
-          coef.all <- arfilt(ar = alpha, ma = beta, d = d, k = k)
-          vol.fc <- omega / (1 - sum(beta)) +
-            sum(coef.all * zeta.all[n.in:(n.in - k + 1)]^2)
-          sig.fc <- c(sqrt(vol.fc), rep(0, (n.out - 1)))
-          for (i in 2:n.out) {
-            vol.fc <- omega / (1 - sum(beta)) +
-              sum(coef.all * zeta.all[(n.in + i - 1):(n.in + i - k)]^2)
-            sig.fc[i] <- sqrt(vol.fc)
-          }
-          sig.fc <- sig.fc * sfc
-        }
-         )
-
-  sdev <- sqrt(df / (df - 2))
-  VaR.fc <- -mean.ret.in + sig.fc * qt(a.v, df)/sdev
-  VaR.e.fc <- -mean.ret.in + sig.fc * qt(a.e, df)/sdev
-  ES0 <- dt(qt(a.e, df), df)/(1 - a.e) * (df + qt(a.e, df)^2)/(df - 1)/sdev
+  arglst[[1]] <- q.e; names(arglst)[1] <- "x"
+  d.es <- do.call(what = dens, args = arglst)
+  ES0 <- d.es / (1 - a.e) * ES0t / sdev
   Esfc <- -mean.ret.in + sig.fc * ES0
 
   if (smooth == "lpr") {
     model <- paste0("Semi-", model)
   }
   results <- list(model = model, mean = mean.ret.in,
-      model.fit = model_fit, ret.in = ret.in.t,
-      ret.out = ret.out.t, sig.in = sig.in,
-      sig.fc = sig.fc, scale = sxt, scale.fc = sfc, VaR.e = VaR.e.fc,
-      VaR.v = VaR.fc, ES = Esfc, df = df, a.v = 1 - a.v, a.e = 1 - a.e,
-      garchOrder = garchOrder, np.est = np.est)
+                  model.fit = model_fit, ret.in = ret.in.t,
+                  ret.out = ret.out.t, sig.in = sig.in,
+                  sig.fc = sig.fc, scale = sxt, scale.fc = sfc, VaR.e = VaR.e.fc,
+                  VaR.v = VaR.fc, ES = Esfc, dfree = dfree, a.v = 1 - a.v,
+                  a.e = 1 - a.e, garchOrder = garchOrder, np.est = np.est)
 
   class(results) <- "ufRisk"
   attr(results, "function") <- "varcast"
