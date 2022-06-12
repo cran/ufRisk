@@ -35,10 +35,13 @@ install.packages("ufRisk")
 The data set `ESTX`, which is implemented in the `ufRisk` package,
 contains daily financial data of the EURO STOXX 50 (ESTX) index from
 April 2007 to December 2021. In the following an example of the
-(out-of-sample) one-step forecasts of the 97.5%-VaR (red line) and the
-corresponding ES (green line) as well as the 99%-VaR (green line), which
-are obtained by employing a FIGARCH model to the `ESTX` return series,
-are illustrated. Exceedances are indicated by the colored circles.
+(out-of-sample) one-step forecasts of the
+97.5![\\%](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;%5C%25 "\%")-VaR
+(red line) and the corresponding ES (green line) as well as the
+99![\\%](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;%5C%25 "\%")-VaR
+(green line), which are obtained by employing a FIGARCH model to the
+`ESTX` return series, are illustrated. Exceedances are indicated by the
+colored circles.
 
 ``` r
 # Applying the FIGARCH model to the ESTX return series
@@ -95,19 +98,19 @@ trafftest(results)
 #>  Red zone:    p >= 99.99%      
 #>  
 #> # Test 1: 99%-VaR #
-#>  Number of violations: 3
-#>  p = 0.7581: Green zone
+#>  Number of violations: 4
+#>  p = 0.8922: Green zone
 #>  
 #> # Test 2: 97.5%-VaR #
 #>  Number of violations: 9
 #>  p = 0.9005: Green zone
 #>  
 #> # Test 3: 97.5%-ES #
-#>  Number of weighted violations: 4.7459
-#>  p = 0.8715: Green zone
+#>  Number of weighted violations: 5.1227
+#>  p = 0.9188: Green zone
 #>  
 #> # Weighted Absolute Deviation #
-#>  WAD = 1.1587
+#>  WAD = 1.6793
 ```
 
 ------------------------------------------------------------------------
@@ -125,17 +128,21 @@ covtest(results)
 #> # Unconditional coverage test #
 #>  
 #> H0: w = 0.99
-#> p_[uc] = 0.753
+#> p_[uc] = 0.3805
+#> Decision: Fail to reject H0
 #>  
 #> # Independence test #
 #>  
-#> H0: w_[00] = w[10]
-#> p_[ind] = 0.7868
+#> H0: w_[00] = w_[10]
+#> p_[ind] = 0.6865
+#> Decision: Fail to reject H0
 #>  
 #> # Conditional coverage test #
 #>  
 #> H0: w_[00] = w_[10] = 0.99
-#> p_[cc] = 0.9175
+#> p_[cc] = 0.6275
+#> Decision: Fail to reject H0
+#> 
 ```
 
 ------------------------------------------------------------------------
@@ -147,16 +154,16 @@ lossfunc(results)
 #> Please note that the following results are multiplied with 10000.
 #> 
 #> $lossfunc1
-#> [1] 7.411243
+#> [1] 7.693316
 #> 
 #> $lossfunc2
-#> [1] 14.1705
+#> [1] 14.31244
 #> 
 #> $lossfunc3
-#> [1] 14.39198
+#> [1] 14.56085
 #> 
 #> $lossfunc4
-#> [1] 13.44642
+#> [1] 13.61529
 ```
 
 ------------------------------------------------------------------------

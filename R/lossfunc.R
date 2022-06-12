@@ -90,6 +90,7 @@
 #'
 #'@examples
 #'
+#'\donttest{
 #'# Example for Walmart Inc. (WMT)
 #'prices <- WMT$price.close
 #'output <- varcast(prices)
@@ -103,7 +104,7 @@
 #'x <- WMT$price.close
 #'output <- varcast(prices)
 #'lossfunc(output)
-#'
+#'}
 
 lossfunc <- function(obj = list(Loss = NULL, ES = NULL), beta = 1e-04) {
 

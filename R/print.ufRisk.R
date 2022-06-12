@@ -66,15 +66,31 @@ print.ufRisk <- function(x, ...) {
         cat(" ", fill = TRUE)
         cat("H0: w = ", x$p, sep = "", fill = TRUE)
         cat("p_[uc] = ", round(x$p.uc, 4), sep = "", fill = TRUE)
+        if (x$p.uc <= (1 - x$p)){
+          cat("Decision: Reject H0", fill = TRUE)
+        } else {
+          cat("Decision: Fail to reject H0", fill = TRUE)
+        }
         cat(" ", fill = TRUE)
         cat("# Independence test #", fill = TRUE)
         cat(" ", fill = TRUE)
-        cat("H0: w_[00] = w[10]", sep = "", fill = TRUE)
+        cat("H0: w_[00] = w_[10]", sep = "", fill = TRUE)
         cat("p_[ind] = ", round(x$p.ind, 4), sep = "", fill = TRUE)
+        if (x$p.ind <= (1 - x$p)){
+          cat("Decision: Reject H0", fill = TRUE)
+        } else {
+          cat("Decision: Fail to reject H0", fill = TRUE)
+        }
         cat(" ", fill = TRUE)
         cat("# Conditional coverage test #", fill = TRUE)
         cat(" ", fill = TRUE)
         cat("H0: w_[00] = w_[10] = ", x$p, sep = "", fill = TRUE)
         cat("p_[cc] = ", round(x$p.cc, 4), sep = "", fill = TRUE)
+        if (x$p.cc <= (1 - x$p)){
+          cat("Decision: Reject H0", fill = TRUE)
+        } else {
+          cat("Decision: Fail to reject H0", fill = TRUE)
+        }
+        cat(" ", fill = TRUE)
     }
 }

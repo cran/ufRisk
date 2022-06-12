@@ -83,6 +83,7 @@ a list returned by the \code{varcast} function is directly passed to
 }
 \examples{
 
+\donttest{
 # Example for Walmart Inc. (WMT)
 prices <- WMT$price.close
 output <- varcast(prices)
@@ -95,7 +96,7 @@ lossfunc(loss.data)
 x <- WMT$price.close
 output <- varcast(prices)
 lossfunc(output)
-
+}
 }
 \references{
 Abad, P., Muela, S. B., & Martín, C. L. (2015). The role of the loss function

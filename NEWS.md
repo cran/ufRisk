@@ -1,3 +1,7 @@
+# ufRisk 1.0.5
+
+* fixed a minor bug in 'covtest()'
+
 # ufRisk 1.0.4
 
 * added the option to choose between normal- and t-distribution (via the 

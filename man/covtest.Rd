@@ -122,6 +122,7 @@ results is printed.
 }
 \examples{
 
+\donttest{
 # Example for Walmart Inc. (WMT)
 prices <- WMT$price.close
 output <- varcast(prices)
@@ -133,7 +134,7 @@ covtest(covtest.data)
 # directly passing an output object of 'varcast()' to 'covtest()'
 output <- varcast(prices)
 covtest(output)
-
+}
 }
 \references{
 Christoffersen, P. F. (1998). Evaluating interval forecasts. International
