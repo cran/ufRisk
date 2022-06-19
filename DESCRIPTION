@@ -1,7 +1,7 @@
 Package: ufRisk
 Type: Package
 Title: Risk Measure Calculation in Financial TS
-Version: 1.0.5
+Version: 1.0.6
 Description: Enables the user to calculate Value at Risk (VaR) and Expected 
     Shortfall (ES) by means of various parametric and semiparametric 
     GARCH-type models. For the latter the estimation of the nonparametric scale
@@ -35,7 +35,7 @@ Authors@R: c(
 URL: https://wiwi.uni-paderborn.de/en/dep4/feng/
 RoxygenNote: 7.2.0
 NeedsCompilation: no
-Packaged: 2022-06-12 19:43:32 UTC; Letmode
+Packaged: 2022-06-19 10:06:06 UTC; Letmode
 Author: Yuanhua Feng [aut] (Paderborn University, Germany),
   Xuehai Zhang [aut] (Former research associate at Paderborn University,
     Germany),
@@ -45,4 +45,4 @@ Author: Yuanhua Feng [aut] (Paderborn University, Germany),
   Sebastian Letmathe [aut, cre] (Paderborn University, Germany)
 Maintainer: Sebastian Letmathe <sebastian.letmathe@uni-paderborn.de>
 Repository: CRAN
-Date/Publication: 2022-06-12 19:50:02 UTC
+Date/Publication: 2022-06-19 10:20:02 UTC

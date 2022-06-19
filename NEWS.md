@@ -1,3 +1,8 @@
+# ufRisk 1.0.6
+
+* added argument 'conflvl' to 'covtest()' in order to set the significance 
+  level for hypothesis testing
+
 # ufRisk 1.0.5
 
 * fixed a minor bug in 'covtest()'

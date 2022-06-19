@@ -119,7 +119,7 @@ trafftest(results)
 independence test**
 
 ``` r
-covtest(results)
+covtest(results, conflvl = 0.95)
 #>  
 #> ##################################
 #> #          Test results          #

@@ -15,6 +15,9 @@
 #'stated in the null hypotheses of the coverage tests (see the section
 #'\code{Details} for more information); is set to \code{NULL} by default.}
 #'}
+#'@param conflvl a numeric vector with one element; the significance
+#'level at which the null hypotheses are evaluated; is set to \code{0.95} by
+#'default.
 #'Please note that a list returned by the \code{varcast} function can be directly
 #'passed to \code{covtest}.
 #'
@@ -36,9 +39,8 @@
 #'
 #'if \eqn{-r_t > \widehat{VaR}_t (\alpha)} or
 #'
-#'\deqn{I_t = 0,}
+#'\deqn{I_t = 0,} otherwise,
 #'
-#'otherwise,
 #'for \eqn{t = n + 1, n + 2, ..., n + K} as the hit sequence, where \eqn{\alpha} is
 #'the confidence level for the VaR (often \eqn{\alpha = 0.95} or \eqn{\alpha = 0.99}).
 #'Furthermore, denote \eqn{p = \alpha} and let \eqn{w} be the actual covered
@@ -101,9 +103,10 @@
 #'
 #'-----------------------------------------------------------------------------
 #'
-#'The function needs three inputs: the out-of-sample loss series, the
-#'corresponding estimated \eqn{VaR(p)} series and the coverage level \eqn{p}, for which the
-#'VaR has been calculated. If an object returned by this function
+#'The function needs four inputs: the out-of-sample loss series \code{obj$Loss}, the
+#'corresponding estimated VaR series \code{obj$VaR}, the coverage level \code{obj$p},
+#'for which the VaR has been calculated and the significance level \code{conflvl},
+#'at which the null hypotheses are evaluated. If an object returned by this function
 #'is entered into the R console, a detailed overview of the test
 #'results is printed.
 #'
@@ -114,6 +117,8 @@
 #'\item{p.uc}{the p-value of the unconditional coverage test.}
 #'\item{p.cc}{the p-value of the conditional coverage test.}
 #'\item{p.ind}{the p-value of the independence test.}
+#'\item{conflvl}{the significance level at which the null hypotheses are
+#'evaluated.}
 #'}
 #'
 #'@author
@@ -147,7 +152,7 @@
 #'covtest(output)
 #'}
 
-covtest <- function(obj = list(Loss = NULL, VaR = NULL, p = NULL)) {
+covtest <- function(obj = list(Loss = NULL, VaR = NULL, p = NULL), conflvl = 0.95) {
 
     if (!is.list(obj) && !is.data.frame(obj)) {
         stop("A list or data frame containing two vectors with equal
@@ -192,6 +197,9 @@ covtest <- function(obj = list(Loss = NULL, VaR = NULL, p = NULL)) {
     It <- Loss > VaR
     n0 <- sum(1 - It[1:n.out])
     n1 <- sum(It[1:n.out])
+    if (n1 == 0) {
+      stop("No VaR violations found. Tests are not applicable.")
+      }
     Itf <- It[1:(n.out - 1)]
     Its <- It[2:n.out]
     diff.It <- Itf - Its
@@ -224,7 +232,8 @@ covtest <- function(obj = list(Loss = NULL, VaR = NULL, p = NULL)) {
     result <- list(p = p,
                    p.uc = p.uc,
                    p.ind = p.ind,
-                   p.cc = p.cc)
+                   p.cc = p.cc,
+                   conflvl = conflvl)
     class(result) <- "ufRisk"
     attr(result, "function") <- "covtest"
     result
