@@ -193,6 +193,12 @@ covtest <- function(obj = list(Loss = NULL, VaR = NULL, p = NULL), conflvl = 0.9
         p <- obj[["p"]]
     }
 
+  if (length(conflvl) != 1 || is.na(conflvl) || !is.numeric(conflvl) ||
+      conflvl <= 0 || conflvl >= 1) {
+    stop("A single numeric value that satisfies >0 and <1 must be passed to",
+         " 'conflvl'")
+  }
+
     n.out <- length(Loss)
     It <- Loss > VaR
     n0 <- sum(1 - It[1:n.out])

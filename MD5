@@ -1,16 +1,16 @@
-07bb9421de370cb0bd95bb2e6c1d423c *DESCRIPTION
+20fe1548c5223235769738ce6ac5b8b2 *DESCRIPTION
 898e9e8721b578f8abe900787b91a27b *NAMESPACE
 dd1af5e61d2309f5a674be7f52440776 *NEWS.md
 90eaac5ed8c7e91bd70813c75333b73f *R/ESTX.R
 73ca0703ffc2e9f87b71fb17e00a935f *R/WMT.R
 12fcc2dbc503c939b056a4dd27772b49 *R/Welcome.R
-ad894c9057e0e6277b128f8ecda20e22 *R/covtest.R
+296b6aecc7d2e68364b96af96616ee22 *R/covtest.R
 8ae6fd4bace214bf1b7e629fb3ebd33d *R/lossfunc.R
 1803e2bb500e43acba486106d6a46a4e *R/plot.ufRisk.R
-3392282216a0f92174767f187ba6b11c *R/print.ufRisk.R
+4faedd51e0d1a8beae017acb99a22b54 *R/print.ufRisk.R
 495aa00af323cab8cc3ad180ead3d82d *R/sysdata.rda
 bb0a2b1d4e6def65d304b76d42966068 *R/trafftest.R
-5f63e864b82268b7641de5599d8a6f60 *R/ufRisk.R
+dd5ce8d90e849c0c33b9cef7cb040abb *R/ufRisk.R
 4faf2d4b5fa08b72203422a14438d90d *R/varcast.R
 bf8fee574c1761ef958dd18c2582967a *README.md
 a0e8218242b402c5362cf4876db80bfa *data/ESTX.rda
@@ -27,5 +27,5 @@ f4f381074edefe38d4f666cfb02cc970 *man/lossfunc.Rd
 c49d7c4f2c66fdac38c6649b997f76de *man/plot.ufRisk.Rd
 117a527428c0c84b2a40583a60037194 *man/print.ufRisk.Rd
 75b5bab52c633178bafcbb1003654c42 *man/trafftest.Rd
-4315b14a489f1214a6c627aadc31e571 *man/ufRisk.Rd
+48e64e8a2146f273c7e3fb0a04100db3 *man/ufRisk.Rd
 102d31b4c593099079f52bfcee2cad6b *man/varcast.Rd

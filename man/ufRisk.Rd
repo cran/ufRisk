@@ -3,6 +3,7 @@
 \docType{package}
 \name{ufRisk}
 \alias{ufRisk}
+\alias{ufRisk-package}
 \title{ufRisk: A package for user friendly and practical usage of various
 backtesting methods.}
 \description{

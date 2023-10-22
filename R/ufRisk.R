@@ -80,5 +80,6 @@
 #'
 #'@docType package
 #'@name ufRisk
+#'@aliases ufRisk-package
 NULL
 
